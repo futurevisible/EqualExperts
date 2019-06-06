@@ -13,7 +13,6 @@ trait BrowserType extends ServerConfiguration with WebBrowser
 object BrowserType extends ServerConfiguration  {
   implicit lazy val webDriver: WebDriver = properties.get("driver") match {
     case Some("chrome") => new Chrome().driver
-    case Some("ie") => new IE().driver
     case Some("firefox") => new Firefox().driver
     case _ => new Chrome().driver
   }

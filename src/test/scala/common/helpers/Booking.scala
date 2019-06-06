@@ -1,10 +1,12 @@
 package common.helpers
 
 trait Booking {
-  def firstName: String
-  def lastName: String
-  def price: Int
-  def deposit: Boolean
-  def checkIn: String
-  def checkOut: String
+  def setFirstName(fN: Option[String]): Unit
+  def setLastName(lN: Option[String]): Unit
+  def setPrice(p: Option[Int]): Unit
+  def setDeposit(d: Option[Boolean]): Unit
+  def setCheckIn(cIn: Option[String]): Unit
+  def setCheckOut(cOut: Option[String]): Unit
 }
+
+

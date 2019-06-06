@@ -1,25 +1,26 @@
 package bdd.stepDefs
 
-import common.helpers.{Booking, DefaultCustomer}
+import java.lang.System._
+
+import common.helpers.Customer
 import common.pages._
 import cucumber.api.scala.{EN, ScalaDsl}
 import org.scalatest.Matchers
 
-import scala.collection.mutable.{Map => MutableMap}
-
 class stepDefinitions extends ScalaDsl with EN with Matchers {
 
-//  System.setProperty("driver", System.getenv.get("driver"))
-//  System.setProperty("server", System.getenv.get("server"))
+  setProperty("driver", System.getenv("driver"))
 
-  LandingPage.setCaptureDir("../../../screenshots/")
 
-  implicit val browser = common.browsers.BrowserType.webDriver
-
-  //vars for later test expectations added to this mutable map
-  var expectationVars = MutableMap[String, String]()
   //  persons personal details
-  val customer: Booking = DefaultCustomer()
+  val defaultCustomer: Customer = Customer(
+                                            Some("Terry"),
+                                            Some("Jones"),
+                                            Some(1000),
+                                            Some(true),
+                                            Some("2019-08-01"),
+                                            Some("2019-08-31")
+                                          )
 
   /**
     * Hook run BEFORE each scenario.
@@ -44,8 +45,38 @@ class stepDefinitions extends ScalaDsl with EN with Matchers {
 //  }
 
   Given("""^a new customer lands on the hotel booking page""") { () =>
-      LandingPage.goToPage()
-      Thread.sleep(4000)
+      LandingPage.navigateToPage()
+      LandingPage.waitForCompletion()
+  }
+
+  When("""^the customer fills in the required information except for the (.*)""") { field: String =>
+    LandingPage.fillInWithOneMissingField(field, defaultCustomer)
+    LandingPage.waitForCompletion()
+  }
+
+  Then("""submission of the booking form (.*)""") { submissionState: String =>
+    val expectedResult: Int = submissionState match {
+      case "succeeds" => 1
+      case "fails" => 0
+    }
+    LandingPage.saveBooking()
+    LandingPage.waitForCompletion()
+    assert(LandingPage.numberOfCustomerRecords(defaultCustomer) == expectedResult)
+  }
+
+  Then("""the customer fills in the required information with no exceptions""") { () =>
+    LandingPage.completeForm(defaultCustomer)
+    LandingPage.waitForCompletion()
+  }
+
+  When("""the customer opts to delete the booking""") { () =>
+    LandingPage.deleteBooking(defaultCustomer)
+    LandingPage.waitForCompletion()
+  }
+
+  Then("""the record is removed from the booking page""") { () =>
+    LandingPage.waitForCompletion()
+    assert(LandingPage.numberOfCustomerRecords(defaultCustomer) == 0)
   }
 
 }
