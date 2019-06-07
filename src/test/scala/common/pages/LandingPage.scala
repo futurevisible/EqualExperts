@@ -1,6 +1,7 @@
 package common.pages
 
 import common.helpers.{Booking, Customer}
+import org.openqa.selenium.WebElement
 
 object LandingPage extends PageInfo with MyPage with Booking {
 
@@ -90,10 +91,16 @@ object LandingPage extends PageInfo with MyPage with Booking {
       val checkOut = customer.checkOut.getOrElse(throw new RuntimeException("Always should be a complete customer record"))
 
       val parentElementXPath = "//div[contains(@class, 'col-md-2')]/p[contains(text(),'" + lastName + "' )]/../.."
-      val listOfPotentialParentsContainingCustomers = returnElementsViaValue(parentElementXPath)
+      val listOfPotentialParentsContainingCustomers: List[WebElement] = returnElementsViaValue(parentElementXPath).toList
 
-      var counter = 0
-      for (potentialParent <- listOfPotentialParentsContainingCustomers) {
+      def loopThroughElements(ListOfWebElements: List[WebElement], counter: Int): Int = {
+        if (ListOfWebElements.isEmpty) {
+          return counter
+        }
+
+        val potentialParent = ListOfWebElements.head
+
+        // a parent div to a record that should therefore contain all details of the customer it is a true match
         val textInParent = potentialParent.getText
 
         val containsFirstName: Boolean = textInParent.contains(firstName)
@@ -101,12 +108,14 @@ object LandingPage extends PageInfo with MyPage with Booking {
         val containsCheckIn: Boolean = textInParent.contains(checkIn)
         val containsCheckOut: Boolean = textInParent.contains(checkOut)
 
-        //if the enclosing parent contains all the freeform booking info, then increment the number of found records
         if (containsFirstName && containsPrice && containsCheckIn && containsCheckOut) {
-          counter = counter + 1
+          return loopThroughElements(ListOfWebElements.tail, counter + 1)
         }
+
+        loopThroughElements(ListOfWebElements.tail, counter)
       }
-      counter
+
+      loopThroughElements(listOfPotentialParentsContainingCustomers, 0)
     }
 
     val firstNameXPath = "//div[contains(@class, 'col-md-2')]/p[contains(text(),'" + customer.firstName.getOrElse("") + "')]"

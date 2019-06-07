@@ -1,4 +1,4 @@
-@end_to_end @success
+@end_to_end @success @all
 Feature: a customer successfully completes a booking and then deletes the returned information
 
 Scenario: A new booking is made with all the required information

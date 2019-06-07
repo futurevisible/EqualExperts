@@ -1,4 +1,4 @@
-@incomplete_information
+@incomplete_information @all
 Feature: one or more customers attempt to book the Equal Experts hotel with incomplete
   information.
 

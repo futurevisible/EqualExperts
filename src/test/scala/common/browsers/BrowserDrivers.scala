@@ -18,7 +18,9 @@ class Firefox {
 }
 
 class Chrome {
+//  change this path to chromedriver here if necessary
   val cfile: File=new File("/Applications/chromedriver")
+
   System.setProperty("webdriver.chrome.driver", System.getProperty("webdriver.chrome.driver", cfile.getAbsolutePath))
   val options: ChromeOptions= new ChromeOptions()
   options.addArguments("--disable-extensions")

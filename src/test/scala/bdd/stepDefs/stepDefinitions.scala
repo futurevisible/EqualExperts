@@ -40,6 +40,7 @@ class stepDefinitions extends ScalaDsl with EN with Matchers {
     * Probably don't want to shut down the app prior to each scenario so
     * commands commented out at present.
     */
+//  TODO: make sure any booking records reaped from the page via deletion. Tests must be stateless.
 //  After() { s =>
 //
 //  }
